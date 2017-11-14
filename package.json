@@ -1,0 +1,26 @@
+{
+  "name": "regl-experiments",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaxBittker/regl-experiments.git"
+  },
+  "author": "maxbittker <maxbittker@gmail.com> (maxbittker.github.io)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MaxBittker/regl-experiments/issues"
+  },
+  "homepage": "https://github.com/MaxBittker/regl-experiments#readme",
+  "dependencies": {
+    "getusermedia": "^2.0.1",
+    "regl": "^1.3.0",
+    "regl-camera": "^2.1.1",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
+  }
+}
