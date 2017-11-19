@@ -1,13 +1,13 @@
-// const rC = require("regl");
-var createReglRecorder = require('regl-recorder')
+const regl = require("regl")();
+// var createReglRecorder = require('regl-recorder')
 
 const VIDEO_WIDTH = 600
 const VIDEO_HEIGHT = 600
 
 
-const regl = require('regl')(require('gl')(VIDEO_WIDTH, VIDEO_HEIGHT, {preserveDrawingBuffer: true}))
+// const regl = require('regl')(require('gl')(VIDEO_WIDTH, VIDEO_HEIGHT, {preserveDrawingBuffer: true}))
 
-var recorder = createReglRecorder(regl, 150)
+// var recorder = createReglRecorder(regl, 150)
 
 const camera = require("regl-camera")(regl, {
   center: [0, 0, 0],
@@ -150,9 +150,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
 
       // Draw the spectrum
       drawSpectrum();
-      console.log(viewportHeight)
-      recorder.frame(viewportWidth, viewportHeight)
-      
+      // recorder.frame(viewportWidth, viewportHeight)
     });
   });
 });
