@@ -79,7 +79,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
     void main() {
       
       gl_FragColor = vec4(
-        vec3(sin( time*0.01 +distance(vPosition, vec3(0.1))*20.) ),
+        vec3(sin( time*0.01 +distance(vPosition, vec3(0.1))*50.) ),
         1.0);
       
     }`,
@@ -99,12 +99,12 @@ require("getusermedia")({ audio: true }, function(err, stream) {
     lineWidth: 1,
     depth: { enable: true },
     count: fftSize,
-    primitive: "line loop"
+    primitive: "lines"
   });
 
   function cPoint(i,v,N) {
     var phi = 4 * Math.PI * (i / N);
-    var rho = phi*140;
+    var rho = phi*10;
     let r = 1;
     
     if(v==1){
@@ -112,7 +112,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
     }
     if(v==2){
       // rho+= Math.PI*0.20;
-      r= 0.1;
+      r= 0.5;
     }
 
     let x = r * Math.sin(phi)*Math.cos(rho);
