@@ -1,4 +1,12 @@
 // const rC = require("regl");
+const start = clock();
+
+function clock(start) {
+  if ( !start ) return process.hrtime();
+  var end = process.hrtime(start);
+  return Math.round((end[0]*1000) + (end[1]/1000000));
+}
+
 var createReglRecorder = require('regl-recorder')
 
 const VIDEO_WIDTH = 600
@@ -7,7 +15,7 @@ const VIDEO_HEIGHT = 600
 
 const regl = require('regl')(require('gl')(VIDEO_WIDTH, VIDEO_HEIGHT, {preserveDrawingBuffer: true}))
 
-var recorder = createReglRecorder(regl, 150)
+var recorder = createReglRecorder(regl, 50)
 
 const camera = require("regl-camera")(regl, {
   center: [0, 0, 0],
@@ -23,19 +31,20 @@ function flatten(a) {
 }
 
 // First we need to get permission to use the microphone
-require("getusermedia")({ audio: true }, function(err, stream) {
-  if (err) {
-    return;
-  }
+// require("getusermedia")({ audio: true }, function(err, stream) {
+  // if (err) {
+    // console.log(err)
+    // return;
+  // }
 
   // Next we create an analyser node to intercept data from the mic
-  const context = new AudioContext();
-  const analyser = context.createAnalyser();
+  // const context = new AudioContext();
+  // const analyser = context.createAnalyser();
   // And then we connect them together
-  context.createMediaStreamSource(stream).connect(analyser);
+  // context.createMediaStreamSource(stream).connect(analyser);
 
   // Here we preallocate buffers for streaming audio data
-  const fftSize = analyser.frequencyBinCount;
+  const fftSize = 1024;//analyser.frequencyBinCount;
   const frequencies = new Uint8Array(fftSize);
   const fftBuffer = regl.buffer({
     length: fftSize,
@@ -65,7 +74,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
         p.x,
         p.y ,
         p.z ,
-        (0.9 - frequency*0.9));
+        (0.3 - frequency*0.3));
       vPosition = ps.xyz;
         
        gl_Position = projection * view * ps;
@@ -84,7 +93,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
       
     }`,
     uniforms:{
-      time: (context)=>{return window.performance.now()}
+      time: (context)=>{return clock(start)}
     },
     attributes: {
       index: Array(fftSize).fill().map((_, i) => i),
@@ -144,15 +153,15 @@ require("getusermedia")({ audio: true }, function(err, stream) {
       });
       // console.log(state)
       // Poll microphone data
-      analyser.getByteFrequencyData(frequencies);
+      // analyser.getByteFrequencyData(frequencies);
       // Here we use .subdata() to update the buffer in place
-      fftBuffer.subdata(frequencies);
+      // fftBuffer.subdata(frequencies);
 
       // Draw the spectrum
       drawSpectrum();
-      console.log(viewportHeight)
+      // console.log(viewportHeight)
       recorder.frame(viewportWidth, viewportHeight)
       
     });
   });
-});
+// });
