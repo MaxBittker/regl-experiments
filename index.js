@@ -61,11 +61,21 @@ require("getusermedia")({ audio: true }, function(err, stream) {
       float theta = 2.0 * PI * index / float(FFT_SIZE);
       vec3 p = position;
       
+
+      float i = index / float(FFT_SIZE);
+      
+      float phi = 4.0 * PI * i;
+      float rho = phi * 15. * sin(time*0.00001);
+      float r = 1.0;
+
+      float x = r * sin(phi) * cos(rho);
+      float y = r * sin(phi) * sin(rho);
+      float z = r * cos(phi)* 1.0;
       vec4 ps = vec4(
-        p.x,
-        p.y ,
-        p.z ,
-        (0.3 - frequency*0.3));
+        x,
+        y ,
+        z ,
+        (0.3 - frequency*0.15));
       vPosition = ps.xyz;
         
        gl_Position = projection * view * ps;
@@ -78,10 +88,10 @@ require("getusermedia")({ audio: true }, function(err, stream) {
     
     void main() {
       
-      gl_FragColor = vec4(
-        vec3(sin( time*0.005 +distance(vPosition, vec3(0.1))*120.) ),
-        1.0);
-      
+      vec3 color = vec3(1.0);
+    //  color  = vec3(sin( time*0.005 +distance(vPosition, vec3(0.1))*90.) );
+     
+      gl_FragColor = vec4(color,1.0);
     }`,
     uniforms:{
       time: (context)=>{return window.performance.now()}
