@@ -6,7 +6,7 @@ const VIDEO_HEIGHT = 600;
 
 import vsh from "./vertex.sh.js";
 import fsh from "./fragment.sh.js";
-import { cPoint, makeCircle } from "./construct";
+import { cPoint, build, build } from "./construct";
 
 // const regl = require('regl')(require('gl')(VIDEO_WIDTH, VIDEO_HEIGHT, {preserveDrawingBuffer: true}))
 // var recorder = createReglRecorder(regl, 150)
@@ -31,7 +31,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
   context.createMediaStreamSource(stream).connect(analyser);
 
   // Here we preallocate buffers for streaming audio data
-  const fftSize = analyser.frequencyBinCount;
+  const fftSize = analyser.frequencyBinCount*10;
   const frequencies = new Uint8Array(fftSize);
   const fftBuffer = regl.buffer({
     length: fftSize,
@@ -53,7 +53,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
         buffer: fftBuffer,
         normalized: true
       },
-      position: regl.buffer(makeCircle(fftSize))
+      position: regl.buffer(build(fftSize))
     },
     elements: null,
     instances: -1,
@@ -71,7 +71,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
   });
 
   regl.frame(({ viewportWidth, viewportHeight }) => {
-    camera({dtheta: 0.01},state => {
+    camera({dtheta: 0.001},state => {
       // Clear draw buffer
       regl.clear({
         color: [0, 0, 0, 1],

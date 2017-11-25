@@ -37,9 +37,31 @@ function makeCircle(N) {
       ];
     });
 
-//   lines = flatten(lines);
+  //   lines = flatten(lines);
 
   return lines;
 }
+function makePoint(i, N){
+//   var phi = 4 * Math.PI * (i / N);
+  let phi = (i % 360);
+  var rho = (i % (360*360) )/360 ;
 
-export { cPoint, makeCircle };
+  let r = 3;
+  let x = r * Math.sin(phi) * Math.cos(rho);
+  let y = r * Math.sin(phi) * Math.sin(rho);
+  let z = r * Math.cos(phi) * 1.0;
+  let p = [x,y,z];
+  return [p, p.map(v=>v*0.9)];
+}
+
+function build(N) {
+  let lines = Array(N)
+    .fill()
+    .map((_, i) => {
+        return makePoint(i,N);
+    });
+    
+  return lines;
+}
+
+export { cPoint, makeCircle, build };
