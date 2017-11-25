@@ -11,6 +11,7 @@ var config = {
     publicPath: "/dist/",
     filename: 'bundle.js'
   },
+  devtool: '#cheap-source-map',
   module : {
   loaders : [
     {

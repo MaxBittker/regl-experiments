@@ -1,28 +1,27 @@
 const regl = require("regl")();
-
 // var createReglRecorder = require('regl-recorder')
 
-const VIDEO_WIDTH = 600
-const VIDEO_HEIGHT = 600
+const VIDEO_WIDTH = 600;
+const VIDEO_HEIGHT = 600;
 
 import vsh from "./vertex.sh.js";
 import fsh from "./fragment.sh.js";
-import {cPoint, makeCircle} from "./construct"
+import { cPoint, makeCircle } from "./construct";
 
 // const regl = require('regl')(require('gl')(VIDEO_WIDTH, VIDEO_HEIGHT, {preserveDrawingBuffer: true}))
-
 // var recorder = createReglRecorder(regl, 150)
 
 const camera = require("regl-camera")(regl, {
   center: [0, 0, 0],
-  damping: 0.9,
+  damping: 0.0,
   rotationSpeed: 0.9,
+  renderOnDirty:true,
 });
 
 // First we need to get permission to use the microphone
 require("getusermedia")({ audio: true }, function(err, stream) {
   if (err) {
-    return;
+    throw err;
   }
 
   // Next we create an analyser node to intercept data from the mic
@@ -40,17 +39,18 @@ require("getusermedia")({ audio: true }, function(err, stream) {
     usage: "dynamic"
   });
 
-  // This command draws the spectrogram
-  const drawSpectrum = regl({
-    vert: vsh({fftSize}),
+  const draw = regl({
+    vert: vsh({ fftSize }),
     frag: fsh,
-    uniforms:{
-      time: (context)=>{return window.performance.now()}
+    uniforms: {
+      time: context => {
+        return window.performance.now();
+      }
     },
     attributes: {
       index: Array(fftSize).fill().map((_, i) => i),
       frequency: {
-        buffer: fftBuffer, //flatten(fftBuffer.map( i => [i, i])),
+        buffer: fftBuffer,
         normalized: true
       },
       position: regl.buffer(makeCircle(fftSize))
@@ -60,17 +60,23 @@ require("getusermedia")({ audio: true }, function(err, stream) {
     lineWidth: 1,
     depth: { enable: true },
     count: fftSize,
-    primitive: "line loop"
+    // primitive: 'points',
+    primitive: 'lines',
+    // primitive: 'line strip',
+    // primitive: 'line loop',
+    // primitive: 'triangles',
+    // primitive: 'triangle strip',
+    // primitive: 'triangle fan',
+    
   });
 
-  regl.frame(({viewportWidth,viewportHeight}) => {
-    camera(state => {
+  regl.frame(({ viewportWidth, viewportHeight }) => {
+    camera({dtheta: 0.01},state => {
       // Clear draw buffer
       regl.clear({
         color: [0, 0, 0, 1],
         depth: 1
       });
-
 
       // Poll microphone data
       analyser.getByteFrequencyData(frequencies);
@@ -78,7 +84,7 @@ require("getusermedia")({ audio: true }, function(err, stream) {
       fftBuffer.subdata(frequencies);
 
       // Draw the spectrum
-      drawSpectrum();
+      draw();
       // recorder.frame(viewportWidth, viewportHeight)
     });
   });
