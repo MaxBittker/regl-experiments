@@ -6,7 +6,7 @@ const VIDEO_HEIGHT = 600;
 
 import vsh from "./vertex.sh.js";
 import fsh from "./fragment.sh.js";
-import { cPoint, build, build } from "./construct";
+import { cPoint, buildSphere, buildSpiral, build } from "./construct";
 
 // const regl = require('regl')(require('gl')(VIDEO_WIDTH, VIDEO_HEIGHT, {preserveDrawingBuffer: true}))
 // var recorder = createReglRecorder(regl, 150)
