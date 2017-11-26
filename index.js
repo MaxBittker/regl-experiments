@@ -25,7 +25,6 @@ const drawFeedback = regl({
     ],
     t: ({tick}) => 0.01 * tick
   },
-
   count: 3
 })
 

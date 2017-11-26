@@ -25,6 +25,7 @@
     "gl-shader": "^4.2.1",
     "glsl-camera-ray": "^1.0.0",
     "glsl-diffuse-oren-nayar": "^1.0.2",
+    "glsl-dither": "^1.0.1",
     "glsl-noise": "0.0.0",
     "glsl-raytrace": "^1.0.0",
     "glsl-sdf-normal": "^1.0.0",
