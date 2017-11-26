@@ -1,122 +1,43 @@
-var shell = require("gl-now")();
-var drawTriangle = require("a-big-triangle");
-var createShader = require("gl-shader");
-var shader;
+const regl = require('regl')()
+const mouse = require('mouse-change')()
 
 var fsh = require('./fragment.glsl');
+var vsh = require('./vertex.glsl');
 
-console.log(fsh)
+const pixels = regl.texture()
 
-shell.on("gl-init", function() {
-  shader = createShader(
-    shell.gl,
-    "precision mediump float;\
-  attribute vec2 position;\
-  varying vec2 uv;\
-  void main() {\
-    uv = position.xy;\
-    gl_Position = vec4(position.xy, 0.0, 1.0);\
-  }",
-    fsh
-  );
-});
+const drawFeedback = regl({
+  frag: fsh,
+  vert: vsh,
+  attributes: {
+    position: [
+      -2, 0,
+      0, -2,
+      2, 2]
+  },
 
-shell.on("gl-render", function() {
-  shader.bind();
-  
-  shader.uniforms.t += 0.01;
+  uniforms: {
+    resolution: (context)=>[context.viewportWidth, context.viewportHeight],
+    texture: pixels,
+    mouse: ({pixelRatio, viewportHeight}) => [
+      mouse.x * pixelRatio,
+      viewportHeight - mouse.y * pixelRatio
+    ],
+    t: ({tick}) => 0.01 * tick
+  },
 
-  drawTriangle(shell.gl);
-});
+  count: 3
+})
 
-// const regl = require("regl")();
-// // var createReglRecorder = require('regl-recorder')
+regl.frame(function () {
+  regl.clear({
+    color: [0, 0, 0, 1]
+  })
 
-// const VIDEO_WIDTH = 600;
-// const VIDEO_HEIGHT = 600;
+  drawFeedback()
 
-// import vsh from "./vertex.sh.js";
-// import fsh from "./fragment.sh.js";
-// import { cPoint, buildSphere, buildSpiral, build } from "./construct";
+  pixels({
+    copy: true
+  })
+})
 
-// // const regl = require('regl')(require('gl')(VIDEO_WIDTH, VIDEO_HEIGHT, {preserveDrawingBuffer: true}))
-// // var recorder = createReglRecorder(regl, 150)
-
-// const camera = require("regl-camera")(regl, {
-//   center: [0, 0, 0],
-//   damping: 0.0,
-//   rotationSpeed: 0.9,
-//   renderOnDirty:true,
-// });
-
-// // First we need to get permission to use the microphone
-// require("getusermedia")({ audio: true }, function(err, stream) {
-//   if (err) {
-//     throw err;
-//   }
-
-//   // Next we create an analyser node to intercept data from the mic
-//   const context = new AudioContext();
-//   const analyser = context.createAnalyser();
-//   // And then we connect them together
-//   context.createMediaStreamSource(stream).connect(analyser);
-
-//   // Here we preallocate buffers for streaming audio data
-//   const fftSize = analyser.frequencyBinCount*10;
-//   const frequencies = new Uint8Array(fftSize);
-//   const fftBuffer = regl.buffer({
-//     length: fftSize,
-//     type: "uint8",
-//     usage: "dynamic"
-//   });
-
-//   const draw = regl({
-//     vert: vsh({ fftSize }),
-//     frag: fsh,
-//     uniforms: {
-//       time: context => {
-//         return window.performance.now();
-//       }
-//     },
-//     attributes: {
-//       index: Array(fftSize).fill().map((_, i) => i),
-//       frequency: {
-//         buffer: fftBuffer,
-//         normalized: true
-//       },
-//       position: regl.buffer(build(fftSize))
-//     },
-//     elements: null,
-//     instances: -1,
-//     lineWidth: 1,
-//     depth: { enable: true },
-//     count: fftSize,
-//     // primitive: 'points',
-//     primitive: 'lines',
-//     // primitive: 'line strip',
-//     // primitive: 'line loop',
-//     // primitive: 'triangles',
-//     // primitive: 'triangle strip',
-//     // primitive: 'triangle fan',
-
-//   });
-
-//   regl.frame(({ viewportWidth, viewportHeight }) => {
-//     camera({dtheta: 0.001},state => {
-//       // Clear draw buffer
-//       regl.clear({
-//         color: [0, 0, 0, 1],
-//         depth: 1
-//       });
-
-//       // Poll microphone data
-//       analyser.getByteFrequencyData(frequencies);
-//       // Here we use .subdata() to update the buffer in place
-//       fftBuffer.subdata(frequencies);
-
-//       // Draw the spectrum
-//       draw();
-//       // recorder.frame(viewportWidth, viewportHeight)
-//     });
-//   });
-// });
