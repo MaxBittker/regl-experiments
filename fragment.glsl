@@ -15,13 +15,17 @@ vec2 doModel(vec3 p);
 #pragma glslify: camera = require('glsl-turntable-camera')
 #pragma glslify: noise = require('glsl-noise/simplex/4d')
 #pragma glslify: noise2d = require('glsl-noise/simplex/2d')
-#pragma glslify: noise3d = require('glsl-noise/simplex/3d')
+#pragma glslify: fbm3d = require('glsl-fractal-brownian-noise/3d')
+// #pragma glslify: noise3d = require('glsl-noise/simplex/3d')
+
 
 vec2 doModel(vec3 p) {
-  p.x -=(( mouse.x/resolution.x ) - 0.5)*4.0;
-  p.y -=(( mouse.y/resolution.y ) - 0.5)*4.0;
+  // p.x -=(( mouse.x/resolution.x ) - 0.5)*4.0;
+  // p.y -=(( mouse.y/resolution.y ) - 0.5)*4.0;
   
-  float r  = 0.3 + noise(vec4(p, t)) * 0.25;
+  // float r  = 0.3 + noise(vec4(p, t)) * 0.25;
+  float r  = 0.3 + fbm3d(p*t,5) * 0.25;
+  
   // r*=sin(t)*mouse.x;
   float d  = length(p) - r;
   // float wall = (p.y + 1.0 + noise3d(vec3(p.xz*0.9,t))*0.2 )- length(p.zy);
@@ -57,9 +61,9 @@ void main() {
   float dist     = 4.0;
   camera(rotation, height, dist, resolution, ro, rd);
   bool touched = false;
-  vec2 t = raytrace(ro, rd);
-  if (t.x > -0.5) {
-    vec3 pos = ro + rd * t.x;
+  vec2 tr = raytrace(ro, rd);
+  if (tr.x > -0.5) {
+    vec3 pos = ro + rd * tr.x;
     vec3 nor = normal(pos);
 
     color = lighting(pos, nor, ro, rd);
@@ -70,17 +74,19 @@ void main() {
   color = pow(color, vec3(0.5545));
   
   
-  float a = noise3d( vec3(uv*20.,t) ) * PI*2.;
-  vec4 sample = texture2D(texture, uv + vec2( (cos(a)*3.0)/resolution.x, (sin(a)*3.0)/resolution.y ));
+  // float a = noise3d( vec3(uv*20.,t*0.1) ) * PI*2.;
+  // vec4 sample = texture2D(texture, uv + vec2( (cos(a)*3.0)/resolution.x, (sin(a)*3.0)/resolution.y ));
   
   // if(length(sample)>1.6){
     // color = vec3(1.0,0.1,0.1);
-    color = color*0.5 + sample.rgb*0.5;
+    // color = color*0.5 + sample.rgb*0.5;
   // }
   vec4 back = texture2D(texture, uv+(vec2(0.0, 3./resolution.y)));
   if(!touched){
-    color = sample.rgb;
+    // color = sample.rgb;
   }
-  gl_FragColor.rgb = color ;
+  // gl_FragColor.rgb = curlNoise(vec3(uv * 15.,t));
+  // gl_FragColor = vec4(1.0)* fbm3d(vec3(uv*2.0,t), 9);
+  gl_FragColor.rgb = color;
   gl_FragColor.a   = 1.0;
 }
