@@ -1,12 +1,14 @@
 precision mediump float;
 
-uniform float t;
+uniform float tick;
 uniform vec2 resolution;
-uniform sampler2D texture;
-uniform vec2 mouse;
+// uniform sampler2D texture;
+// uniform vec2 mouse;
 varying vec2 uv;
 float PI = 3.14159;
 vec2 doModel(vec3 p);
+
+float t = sin(tick * PI * 2. /100. )*0.5;
 
 #pragma glslify: raytrace = require('glsl-raytrace', map = doModel, steps = 90)
 #pragma glslify: normal = require('glsl-sdf-normal', map = doModel)
@@ -86,7 +88,7 @@ void main() {
     // color = vec3(1.0,0.1,0.1);
     // color = color*0.5 + sample.rgb*0.5;
   // }
-  vec4 back = texture2D(texture, uv+(vec2(0.0, 3./resolution.y)));
+  // vec4 back = texture2D(texture, uv+(vec2(0.0, 3./resolution.y)));
   if(!touched){
     // color = sample.rgb;
   }
