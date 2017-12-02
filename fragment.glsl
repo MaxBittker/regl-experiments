@@ -32,11 +32,11 @@ vec2 doModel(vec3 p) {
   // float r  = 1.5 + fbm4d(vec4(p,t*0.1), 9) * 0.45;
   
   float d  = length(p) - r;
-  float wall = (p.y - 0.9);
-  float wr = fbm3d( vec3(p.xz, t), 4)*0.2 ;
+  float wall = length(p) -r ;//(p.z - 0.9);
+  float wr = fbm3d( vec3(p.xy, t), 2)*0.2 ;
   // float wr = fbm3d(vec4(p.zxz,t))*0.2 ;
   d = max(- wall+wr, d);
-  wall = wall -  0.000000001;
+  wall = wall -  0.000001;
   d = max(wall-wr , d);
   
   float id = 0.0;
@@ -46,13 +46,13 @@ vec2 doModel(vec3 p) {
 
 vec3 lighting(vec3 pos, vec3 nor, vec3 ro, vec3 rd) {
   vec3 dir1 = normalize(vec3(0, 1, 0));
-  vec3 col1 = vec3(3.0, 0.7, 0.4);
+  vec3 col1 = vec3(1.0, 0.7, 2.4);
   vec3 dif1 = col1 * orenn(dir1, -rd, nor, 0.15, 1.0);
   vec3 spc1 = col1 * gauss(dir1, -rd, nor, 0.15);
 
   // vec3 dir2 = normalize(vec3(0.4, -1, 0.4));
   vec3 dir2 = normalize(vec3(0.9, -1, 0.4));
-  vec3 col2 = vec3(0.4, 0.4, 0.9);
+  vec3 col2 = vec3(2.4, 0.8, 0.9);
   vec3 dif2 = col2 * orenn(dir2, -rd, nor, 0.15, 1.0);
   vec3 spc2 = col2 * gauss(dir2, -rd, nor, 0.15);
 
