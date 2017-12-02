@@ -13,12 +13,12 @@ vec2 doModel(vec3 p);
 #pragma glslify: orenn = require('glsl-diffuse-oren-nayar')
 #pragma glslify: gauss = require('glsl-specular-gaussian')
 #pragma glslify: camera = require('glsl-turntable-camera')
-#pragma glslify: noise = require('glsl-noise/simplex/4d')
+#pragma glslify: noise4d = require('glsl-noise/simplex/4d')
 #pragma glslify: noise2d = require('glsl-noise/simplex/2d')
 #pragma glslify: fbm3d = require('glsl-fractal-brownian-noise/3d')
 #pragma glslify: fbm4d = require('glsl-fractal-brownian-noise/4d')
 
-// #pragma glslify: noise3d = require('glsl-noise/simplex/3d')
+#pragma glslify: noise3d = require('glsl-noise/simplex/3d')
 
 // #pragma glslify: noise4d = require(glsl-noise/simplex/4d)
 
@@ -27,19 +27,19 @@ vec2 doModel(vec3 p) {
   // p.x -=(( mouse.x/resolution.x ) - 0.5)*4.0;
   // p.y -=(( mouse.y/resolution.y ) - 0.5)*4.0;
   
-  float r  = 1.0 + noise(vec4(p, t)) * 0.35;
+  // float r  = 2.0 + noise4d(vec4(p, t)) * 0.035;
+    float r = 2.0;
   // float r  = 1.5 + fbm4d(vec4(p,t*0.1), 9) * 0.45;
   
-  // r*=sin(t)*mouse.x;
-  
   float d  = length(p) - r;
-  // float wall = (p.y + 1.0 + noise3d(vec3(p.xz*0.9,t))*0.2 )- length(p.zy);
-
-  // d = min(wall, d);
-  // d = max(-p.y, d);
+  float wall = (p.y - 0.9);
+  float wr = noise4d(vec4(p.zxx,t))*0.2 ;
+  d = max(- wall+wr, d);
+  wall = wall -  0.00001;
+  d = max(wall-wr , d);
   
   float id = 0.0;
-  d += fbm4d(vec4(p,t),7)*0.2;
+  // d += fbm3d(p, 5)*0.2;
   return vec2(d, id);
 }
 
@@ -49,7 +49,8 @@ vec3 lighting(vec3 pos, vec3 nor, vec3 ro, vec3 rd) {
   vec3 dif1 = col1 * orenn(dir1, -rd, nor, 0.15, 1.0);
   vec3 spc1 = col1 * gauss(dir1, -rd, nor, 0.15);
 
-  vec3 dir2 = normalize(vec3(0.4, -1, 0.4));
+  // vec3 dir2 = normalize(vec3(0.4, -1, 0.4));
+  vec3 dir2 = normalize(vec3(0.9, -1, 0.4));
   vec3 col2 = vec3(0.4, 0.4, 0.9);
   vec3 dif2 = col2 * orenn(dir2, -rd, nor, 0.15, 1.0);
   vec3 spc2 = col2 * gauss(dir2, -rd, nor, 0.15);
@@ -61,7 +62,7 @@ void main() {
   vec3 color = vec3(0.0);
   vec3 ro, rd;
 
-  float rotation = 0.;
+  float rotation = t;
   float height   = 2.5;
   float dist     = 4.0;
   camera(rotation, height, dist, resolution, ro, rd);
