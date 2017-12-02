@@ -33,9 +33,10 @@ vec2 doModel(vec3 p) {
   
   float d  = length(p) - r;
   float wall = (p.y - 0.9);
-  float wr = noise4d(vec4(p.zxx,t))*0.2 ;
+  float wr = fbm3d( vec3(p.xz, t), 4)*0.2 ;
+  // float wr = fbm3d(vec4(p.zxz,t))*0.2 ;
   d = max(- wall+wr, d);
-  wall = wall -  0.00001;
+  wall = wall -  0.000000001;
   d = max(wall-wr , d);
   
   float id = 0.0;
