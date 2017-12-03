@@ -27,16 +27,28 @@ void main () {
   vec2 sample = vec2(1.0-uv.x,  1.0 - uv.y);
   vec3 wcolor = texture2D(webcam, sample).rgb;
   float wmag = luma(wcolor);
+ 
 
-  // sample 
-  vec3 scolor = texture2D(texture,uv).rgb;
+  vec2 sOffset = uv/resolution *30.0;
+  sOffset.x *=0.0;
+  vec3 scolor = texture2D(texture, uv+sOffset).rgb;
+  
+  wcolor = hsl2rgb( fract(t*0.02) , 0.2, wmag+0.5);
 
-  wcolor = hsl2rgb(sin(t*2.), 0.5, wmag+0.5);
-  vec3 color = min(wcolor, scolor);
-  if(length(scolor)< 0.1){
+  vec3 color = wcolor;
+
+  if( luma(wcolor) > luma(scolor) && luma(scolor)>0.7 ){
+    color = scolor;
+  }
+
+  if(length(scolor)< 0.01){
     color = wcolor;
   }
-  color += vec3(0.001);
+
+  // color *=1.01;
+  if(uv.y>0.99){
+    // color = vec3(1.0);
+  }
   gl_FragColor.rgb =color;
 
   gl_FragColor.a = 1.0;
