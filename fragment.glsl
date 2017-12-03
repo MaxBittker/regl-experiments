@@ -26,7 +26,7 @@ vec2 doModel(vec3 p);
 
 vec2 doModel(vec3 p) {
   // float r  = 2.0 + noise4d(vec4(p, t)) * 0.035;
-    float r = 1.5;
+    float r = 2.5;
   // float r  = 1.5 + fbm4d(vec4(p,t*0.1), 9) * 0.45;
   
   float d  = length(p.xz) - r;
@@ -34,12 +34,14 @@ vec2 doModel(vec3 p) {
   // d = max(p.y - 0.01, d);
 
 
-  float wr = fbm3d( vec3(p.xy, t), 2)*0.1 ;
-  float wall = length(p.xz) - r ;//(p.z - 0.9);
+  float wr = fbm3d( vec3(p.xy*0.5, t), 2)*0.9 ;
+  float wall = length(p.xz) - r*0.7 ;//(p.z - 0.9);
   
   d = max(- wall+wr, d);
   // wall = wall -  0.000001;
-  d = max(wall-wr , d);
+   wall = length(p.xz) - r*2.8 ;//(p.z - 0.9);
+  
+  // d = max(wall - wr*0.1 , d);
   
 
   float id = 0.0;
