@@ -14,11 +14,11 @@ vec2 doModel(vec3 p);
 #pragma glslify: gauss = require('glsl-specular-gaussian')
 #pragma glslify: camera = require('glsl-turntable-camera')
 #pragma glslify: noise4d = require('glsl-noise/simplex/4d')
+#pragma glslify: noise3d = require('glsl-noise/simplex/3d')
 #pragma glslify: noise2d = require('glsl-noise/simplex/2d')
 #pragma glslify: fbm3d = require('glsl-fractal-brownian-noise/3d')
 #pragma glslify: fbm4d = require('glsl-fractal-brownian-noise/4d')
 
-#pragma glslify: noise3d = require('glsl-noise/simplex/3d')
 
 // #pragma glslify: noise4d = require(glsl-noise/simplex/4d)
 
@@ -28,7 +28,7 @@ vec2 doModel(vec3 p) {
   // p.y -=(( mouse.y/resolution.y ) - 0.5)*4.0;
   
   // float r  = 2.0 + noise4d(vec4(p, t)) * 0.035;
-    float r = 2.0;
+    float r = 1.7;
   // float r  = 1.5 + fbm4d(vec4(p,t*0.1), 9) * 0.45;
   
   float d  = length(p) - r;
@@ -63,8 +63,8 @@ void main() {
   vec3 color = vec3(0.0);
   vec3 ro, rd;
 
-  float rotation = t;
-  float height   = 2.5;
+  float rotation = t*5.;
+  float height   = 1.5;
   float dist     = 4.0;
   camera(rotation, height, dist, resolution, ro, rd);
   bool touched = false;
@@ -80,9 +80,9 @@ void main() {
   // gamma correction
   color = pow(color, vec3(0.5545));
   
-  
-  // float a = noise3d( vec3(uv*20.,t*0.1) ) * PI*2.;
-  // vec4 sample = texture2D(texture, uv + vec2( (cos(a)*3.0)/resolution.x, (sin(a)*3.0)/resolution.y ));
+  float a = noise3d( vec3(uv*10.,t*9.1) ) * PI*2.;
+  float ps = 2.0;
+  vec4 sample = texture2D(texture, uv + vec2( (cos(a)*ps)/resolution.x, (sin(a)*ps)/resolution.y ));
   
   // if(length(sample)>1.6){
     // color = vec3(1.0,0.1,0.1);
@@ -91,6 +91,12 @@ void main() {
   vec4 back = texture2D(texture, uv+(vec2(0.0, 3./resolution.y)));
   if(!touched){
     // color = sample.rgb;
+  }
+  //dither:
+  if (length(color) >  noise3d(vec3(uv*290.,t))+1.0){
+    color = vec3(1.);
+  }else{
+    color = vec3(0.);
   }
   // gl_FragColor.rgb = curlNoise(vec3(uv * 15.,t));
   // gl_FragColor = vec4(1.0)* fbm4d(vec4(uv*2.0,t,1.0), 3);
