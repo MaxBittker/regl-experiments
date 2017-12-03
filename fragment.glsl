@@ -3,13 +3,12 @@ precision mediump float;
 uniform float t;
 uniform vec2 resolution;
 uniform sampler2D texture;
+uniform sampler2D webcam;
 uniform vec2 mouse;
+
 varying vec2 uv;
 float PI = 3.14159;
-vec2 doModel(vec3 p);
 
-#pragma glslify: raytrace = require('glsl-raytrace', map = doModel, steps = 90)
-#pragma glslify: normal = require('glsl-sdf-normal', map = doModel)
 #pragma glslify: orenn = require('glsl-diffuse-oren-nayar')
 #pragma glslify: gauss = require('glsl-specular-gaussian')
 #pragma glslify: camera = require('glsl-turntable-camera')
@@ -22,78 +21,16 @@ vec2 doModel(vec3 p);
 
 // #pragma glslify: noise4d = require(glsl-noise/simplex/4d)
 
+void main () {
+  vec2 sample = vec2(1.0-uv.x,  1.0 - uv.y);
+  vec3 wcolor = texture2D(webcam, sample).rgb;
 
-vec2 doModel(vec3 p) {
-  // p.x -=(( mouse.x/resolution.x ) - 0.5)*4.0;
-  // p.y -=(( mouse.y/resolution.y ) - 0.5)*4.0;
-  
-  // float r  = 2.0 + noise4d(vec4(p, t)) * 0.035;
-    float r = 2.0;
-  // float r  = 1.5 + fbm4d(vec4(p,t*0.1), 9) * 0.45;
-  
-  float d  = length(p) - r;
-  float wall = (p.y - 0.9);
-  float wr = fbm3d( vec3(p.xz, t), 4)*0.2 ;
-  // float wr = fbm3d(vec4(p.zxz,t))*0.2 ;
-  d = max(- wall+wr, d);
-  wall = wall -  0.000000001;
-  d = max(wall-wr , d);
-  
-  float id = 0.0;
-  // d += fbm3d(p, 5)*0.2;
-  return vec2(d, id);
-}
+  // sample 
+  vec3 scolor = texture2D(texture,uv).rgb;
 
-vec3 lighting(vec3 pos, vec3 nor, vec3 ro, vec3 rd) {
-  vec3 dir1 = normalize(vec3(0, 1, 0));
-  vec3 col1 = vec3(3.0, 0.7, 0.4);
-  vec3 dif1 = col1 * orenn(dir1, -rd, nor, 0.15, 1.0);
-  vec3 spc1 = col1 * gauss(dir1, -rd, nor, 0.15);
-
-  // vec3 dir2 = normalize(vec3(0.4, -1, 0.4));
-  vec3 dir2 = normalize(vec3(0.9, -1, 0.4));
-  vec3 col2 = vec3(0.4, 0.4, 0.9);
-  vec3 dif2 = col2 * orenn(dir2, -rd, nor, 0.15, 1.0);
-  vec3 spc2 = col2 * gauss(dir2, -rd, nor, 0.15);
-
-  return dif1 + spc1 + dif2 + spc2;
-}
-
-void main() {
-  vec3 color = vec3(0.0);
-  vec3 ro, rd;
-
-  float rotation = t;
-  float height   = 2.5;
-  float dist     = 4.0;
-  camera(rotation, height, dist, resolution, ro, rd);
-  bool touched = false;
-  vec2 tr = raytrace(ro, rd);
-  if (tr.x > -0.5) {
-    vec3 pos = ro + rd * tr.x;
-    vec3 nor = normal(pos);
-
-    color = lighting(pos, nor, ro, rd);
-    touched = true;
-  }
-
-  // gamma correction
-  color = pow(color, vec3(0.5545));
-  
-  
-  // float a = noise3d( vec3(uv*20.,t*0.1) ) * PI*2.;
-  // vec4 sample = texture2D(texture, uv + vec2( (cos(a)*3.0)/resolution.x, (sin(a)*3.0)/resolution.y ));
-  
-  // if(length(sample)>1.6){
-    // color = vec3(1.0,0.1,0.1);
-    // color = color*0.5 + sample.rgb*0.5;
-  // }
-  vec4 back = texture2D(texture, uv+(vec2(0.0, 3./resolution.y)));
-  if(!touched){
-    // color = sample.rgb;
-  }
-  // gl_FragColor.rgb = curlNoise(vec3(uv * 15.,t));
-  // gl_FragColor = vec4(1.0)* fbm4d(vec4(uv*2.0,t,1.0), 3);
-  gl_FragColor.rgb = color;
-  gl_FragColor.a   = 1.0;
+  // vec3 color = wcolor*0.2 +  scolor*0.8;
+  vec3 color = min(wcolor, scolor);
+  color += vec3(0.01);
+  gl_FragColor.rgb =color;
+  gl_FragColor.a = 1.0;
 }
