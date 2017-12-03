@@ -8,6 +8,8 @@ uniform vec2 mouse;
 
 varying vec2 uv;
 float PI = 3.14159;
+#pragma glslify: hsl2rgb = require(glsl-hsl2rgb) 
+#pragma glslify: luma = require(glsl-luma) 
 
 #pragma glslify: orenn = require('glsl-diffuse-oren-nayar')
 #pragma glslify: gauss = require('glsl-specular-gaussian')
@@ -24,13 +26,18 @@ float PI = 3.14159;
 void main () {
   vec2 sample = vec2(1.0-uv.x,  1.0 - uv.y);
   vec3 wcolor = texture2D(webcam, sample).rgb;
+  float wmag = luma(wcolor);
 
   // sample 
   vec3 scolor = texture2D(texture,uv).rgb;
 
-  // vec3 color = wcolor*0.2 +  scolor*0.8;
+  wcolor = hsl2rgb(sin(t*2.), 0.5, wmag+0.5);
   vec3 color = min(wcolor, scolor);
-  color += vec3(0.01);
+  if(length(scolor)< 0.1){
+    color = wcolor;
+  }
+  color += vec3(0.001);
   gl_FragColor.rgb =color;
+
   gl_FragColor.a = 1.0;
 }
