@@ -12,6 +12,7 @@ vec2 doModel(vec3 p);
 #pragma glslify: normal = require('glsl-sdf-normal', map = doModel)
 #pragma glslify: orenn = require('glsl-diffuse-oren-nayar')
 #pragma glslify: gauss = require('glsl-specular-gaussian')
+#pragma glslify: luma = require(glsl-luma)
 #pragma glslify: camera = require('glsl-turntable-camera')
 #pragma glslify: noise4d = require('glsl-noise/simplex/4d')
 #pragma glslify: noise3d = require('glsl-noise/simplex/3d')
@@ -24,21 +25,23 @@ vec2 doModel(vec3 p);
 
 
 vec2 doModel(vec3 p) {
-  // p.x -=(( mouse.x/resolution.x ) - 0.5)*4.0;
-  // p.y -=(( mouse.y/resolution.y ) - 0.5)*4.0;
-  
   // float r  = 2.0 + noise4d(vec4(p, t)) * 0.035;
-    float r = 1.7;
+    float r = 1.5;
   // float r  = 1.5 + fbm4d(vec4(p,t*0.1), 9) * 0.45;
   
-  float d  = length(p) - r;
-  float wall = length(p) -r ;//(p.z - 0.9);
-  float wr = fbm3d( vec3(p.xy, t), 2)*0.2 ;
-  // float wr = fbm3d(vec4(p.zxz,t))*0.2 ;
+  float d  = length(p.xz) - r;
+  // d = max(p.y + 0.01, d);
+  // d = max(p.y - 0.01, d);
+
+
+  float wr = fbm3d( vec3(p.xy, t), 2)*0.1 ;
+  float wall = length(p.xz) - r ;//(p.z - 0.9);
+  
   d = max(- wall+wr, d);
-  wall = wall -  0.000001;
+  // wall = wall -  0.000001;
   d = max(wall-wr , d);
   
+
   float id = 0.0;
   // d += fbm3d(p, 5)*0.2;
   return vec2(d, id);
@@ -63,9 +66,9 @@ void main() {
   vec3 color = vec3(0.0);
   vec3 ro, rd;
 
-  float rotation = t*5.;
-  float height   = 1.5;
-  float dist     = 4.0;
+  float rotation = t*2.0;
+  float height   = sin(t)*10.;
+  float dist     = 1.0;
   camera(rotation, height, dist, resolution, ro, rd);
   bool touched = false;
   vec2 tr = raytrace(ro, rd);
@@ -93,10 +96,10 @@ void main() {
     // color = sample.rgb;
   }
   //dither:
-  if (length(color) >  noise3d(vec3(uv*290.,t))+1.0){
-    color = vec3(1.);
+  if (luma(color) >  (noise3d(vec3(uv*290.,t))+1.0)*0.7){
+    // color = vec3(1.);
   }else{
-    color = vec3(0.);
+    // color = vec3(0.);
   }
   // gl_FragColor.rgb = curlNoise(vec3(uv * 15.,t));
   // gl_FragColor = vec4(1.0)* fbm4d(vec4(uv*2.0,t,1.0), 3);
