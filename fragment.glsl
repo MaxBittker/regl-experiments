@@ -8,6 +8,8 @@ uniform vec2 mouse;
 
 varying vec2 uv;
 float PI = 3.14159;
+vec2 pix = vec2(1./resolution.x,1./resolution.y);
+
 #pragma glslify: hsl2rgb = require(glsl-hsl2rgb) 
 #pragma glslify: luma = require(glsl-luma) 
 
@@ -28,24 +30,28 @@ void main () {
 
   vec3 wcolor = texture2D(webcam, sample).rgb;
   float wmag = luma(wcolor);
-  wcolor = hsl2rgb( fract(t*0.02) , 0.2, wmag+0.5);
+  wcolor = hsl2rgb( fract(fract(t*0.2)*5.) , 0.4, wmag+0.5);
  
 
   vec2 sOffset = vec2(0, 1./resolution.y);
   sOffset *=0.0;
-  vec3 scolor = texture2D(texture, uv+sOffset).rgb;
+
+  float a = t * PI * 5.;
+  sOffset = vec2(sin(a),cos(a))*pix*10.;
+  vec3 scolor = texture2D(texture, uv+sOffset+pix).rgb;
   
-  vec3 color = scolor;
 
-
-  if( luma(wcolor) < luma(scolor) && sin(t*50.)>0.99){
-    color = wcolor;
-  }
-
-  if(length(scolor)< 0.01){
-    color = wcolor;
+  vec3 color = wcolor;
+  if(luma(wcolor)>luma(scolor)){
+    color = scolor;
   }
   
+  // color *= 0.99;
+  color *= 1.01;
+  
+  if( length(color)< 0.05){
+    color = wcolor;
+  }
   gl_FragColor.rgb =color;
 
   gl_FragColor.a = 1.0;
