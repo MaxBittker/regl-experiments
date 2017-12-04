@@ -30,27 +30,39 @@ void main () {
 
   vec3 wcolor = texture2D(webcam, sample).rgb;
   float wmag = luma(wcolor);
-  wcolor = hsl2rgb( fract(fract(t*0.2)*5.) , 0.4, wmag+0.5);
+  // wcolor = hsl2rgb( fract(fract(t*0.02)*5.) , 0.2, wmag+0.5);
  
 
   vec2 sOffset = vec2(0, 1./resolution.y);
-  sOffset *=0.0;
+  // sOffset *=0.0;
 
   float a = t * PI * 5.;
-  sOffset = vec2(sin(a),cos(a))*pix*10.;
-  vec3 scolor = texture2D(texture, uv+sOffset+pix).rgb;
-  
+  // sOffset = vec2(0.);
+  vec3 scolor = texture2D(texture, uv+sOffset).rgb;
 
-  vec3 color = wcolor;
-  if(luma(wcolor)>luma(scolor)){
+  vec3 sum = vec3(0.);
+  
+  sum += texture2D(webcam, sample + vec2(- pix.x, - pix.y)).rgb * 0.25;
+  sum += texture2D(webcam, sample + vec2(+ pix.x, - pix.y)).rgb * 0.25;
+  sum += texture2D(webcam, sample + vec2(- pix.x, + pix.y)).rgb * 0.25;
+  sum += texture2D(webcam, sample + vec2(+ pix.x, + pix.y)).rgb * 0.25;
+  sum += texture2D(webcam, sample + vec2(0.)).rgb * -0.7;
+                        
+  if(length(sum)<0.2){
+    sum = vec3(0.);
+  }else{
+    sum = vec3(1.);
+  }
+  vec3 color = sum;
+  if(luma(sum)<luma(scolor)){
     color = scolor;
   }
   
-  // color *= 0.99;
-  color *= 1.01;
+  color *= 0.99;
+  // color *= 1.01;
   
-  if( length(color)< 0.05){
-    color = wcolor;
+  if( length(color) > 0.05){
+    // color = wcolor;
   }
   gl_FragColor.rgb =color;
 
