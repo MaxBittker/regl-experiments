@@ -29,8 +29,8 @@ void main () {
   float wmag = luma(wcolor);
  
 
-  vec2 sOffset = uv/resolution *30.0;
-  sOffset.x *=0.0;
+  vec2 sOffset = vec2(0, 1./resolution.y);
+  sOffset *=0.0;
   vec3 scolor = texture2D(texture, uv+sOffset).rgb;
   
   wcolor = hsl2rgb( fract(t*0.02) , 0.2, wmag+0.5);
