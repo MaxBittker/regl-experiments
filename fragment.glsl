@@ -38,7 +38,7 @@ void main () {
   vec3 scolor = texture2D(texture, uv+sOffset).rgb;
   
   vec3 color = wcolor;
-  float l = fract( t*150. / resolution.x);
+  float l = fract( t*1.5 / resolution.x);
   
   if(uv.x < l +pix.x*5. && uv.x > l+ pix.x*4.){
     color = vec3(0.);
