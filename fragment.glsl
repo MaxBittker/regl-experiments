@@ -30,19 +30,20 @@ void main () {
 
   vec3 wcolor = texture2D(webcam, sample).rgb;
   float wmag = luma(wcolor);
-  wcolor = hsl2rgb( fbm2d(vec2(wmag,t*0.1) ,5)/1.2 , 0.2, wmag+0.5);
+  wcolor = hsl2rgb( 0.7, 0.2, wmag+0.5);
  
 
   vec2 sOffset = vec2(0, 1./resolution.y);
   sOffset *=0.0;
-  float a = sin(length(uv-vec2(1.0))+t)*PI*4.;
+  float a = sin( (length(uv-vec2(0.5))*20.)  - t);
 
-  sOffset = vec2(sin(a),cos(a))*pix;
-  sOffset.y -= pix.y;
+  sOffset = normalize(uv - vec2(0.5))* ((( a+1.0)/3.)-0.3) * pix * 5.;
+  // sOffset.y -= pix.y;
   vec3 scolor = texture2D(texture, uv+sOffset).rgb;
   
   vec3 color = wcolor;
-
+  // vec3 color = normalize(sOffset.xyx);
+  // vec3 color = vec3(a*0.5 + 1.0);
 
   if( luma(wcolor) > luma(scolor)){
     color = scolor;
@@ -50,9 +51,9 @@ void main () {
 
   color += vec3(0.005);
 
-  if(length(scolor)< 0.01){
-    color = wcolor;
-  }
+  // if(length(scolor)< 0.01){
+    // color = wcolor;
+  // }
   
   gl_FragColor.rgb =color;
 
