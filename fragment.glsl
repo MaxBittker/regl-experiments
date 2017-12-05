@@ -35,25 +35,17 @@ void main () {
 
   vec2 sOffset = vec2(0, 1./resolution.y);
   sOffset *=0.0;
-  float a = sin( (length(uv-vec2(0.5))*20.)  - t);
-
-  sOffset = normalize(uv - vec2(0.5))* ((( a+1.0)/3.)-0.3) * pix * 5.;
-  // sOffset.y -= pix.y;
   vec3 scolor = texture2D(texture, uv+sOffset).rgb;
   
   vec3 color = wcolor;
-  // vec3 color = normalize(sOffset.xyx);
-  // vec3 color = vec3(a*0.5 + 1.0);
-
-  if( luma(wcolor) > luma(scolor)){
-    color = scolor;
+  float l = fract( t*150. / resolution.x);
+  
+  if(uv.x < l +pix.x*5. && uv.x > l+ pix.x*4.){
+    color = vec3(0.);
   }
-
-  color += vec3(0.005);
-
-  // if(length(scolor)< 0.01){
-    // color = wcolor;
-  // }
+  if(  uv.x <= l){
+    color = scolor;
+  }  
   
   gl_FragColor.rgb =color;
 
