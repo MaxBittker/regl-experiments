@@ -35,7 +35,7 @@ void main () {
 
   vec2 sOffset = vec2(0, 1./resolution.y);
   sOffset *=0.0;
-  float a = fbm3d(vec3(uv*10.,t),10)*PI*2.;
+  float a = sin(length(uv-vec2(1.0))+t)*PI*4.;
 
   sOffset = vec2(sin(a),cos(a))*pix;
   sOffset.y -= pix.y;
