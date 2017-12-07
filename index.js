@@ -4,7 +4,7 @@ var createReglRecorder = require("regl-recorder");
 
 
 
-const VIDEO_WIDTH = (VIDEO_HEIGHT = 600);
+const VIDEO_WIDTH = (VIDEO_HEIGHT = 800);
 
 const regl = require("regl")(
   require("gl")(VIDEO_WIDTH, VIDEO_HEIGHT, { preserveDrawingBuffer: true })
@@ -33,7 +33,7 @@ const drawFeedback = regl({
       // viewportHeight - mouse.y * pixelRatio
     // ],
     // t: ({ tick }) => 0.01 * tick
-    tick :({tick})=>tick
+    tick :({tick})=>tick*0.3
     
   },
   count: 3
