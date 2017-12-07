@@ -14,31 +14,38 @@ vec2 doModel(vec3 p);
 #pragma glslify: gauss = require('glsl-specular-gaussian')
 #pragma glslify: camera = require('glsl-turntable-camera')
 #pragma glslify: noise4d = require('glsl-noise/simplex/4d')
+#pragma glslify: fbm3d = require('glsl-fractal-brownian-noise/3d')
 #pragma glslify: noise3d = require('glsl-noise/simplex/3d')
 #pragma glslify: noise2d = require('glsl-noise/simplex/2d')
-#pragma glslify: fbm3d = require('glsl-fractal-brownian-noise/3d')
-#pragma glslify: fbm4d = require('glsl-fractal-brownian-noise/4d')
+
+// #pragma glslify: fbm4d = require('glsl-fractal-brownian-noise/4d')
 
 
 // #pragma glslify: noise4d = require(glsl-noise/simplex/4d)
 
 
 vec2 doModel(vec3 p) {
-  // p.x -=(( mouse.x/resolution.x ) - 0.5)*4.0;
-  // p.y -=(( mouse.y/resolution.y ) - 0.5)*4.0;
-  
   // float r  = 2.0 + noise4d(vec4(p, t)) * 0.035;
-    float r = 1.7;
+    float r = 1.2;
   // float r  = 1.5 + fbm4d(vec4(p,t*0.1), 9) * 0.45;
   
   float d  = length(p) - r;
-  float wall = length(p) -r ;//(p.z - 0.9);
-  float wr = fbm3d( vec3(p.xy, t), 2)*0.2 ;
+  float wall = d ;//(p.z - asd0.9);
+  wall = mod(wall, 0.3);
+  // d = wall;
+  float wr = fbm3d( vec3(p.xy, t), 2)*0.9 ;
   // float wr = fbm3d(vec4(p.zxz,t))*0.2 ;
   d = max(- wall+wr, d);
   wall = wall -  0.000001;
   d = max(wall-wr , d);
-  
+  //  float d  = length(p) - r;
+  // float wall = (p.y - 0.9);
+  // wall = mod(wall, 0.5);
+  // float wr = noise4d(vec4(p.zxx,t))*0.1 ;
+  // d = max(- wall+wr, d);
+  // wall = wall -  0.00001;
+  // d = max(wall-wr , d);
+
   float id = 0.0;
   // d += fbm3d(p, 5)*0.2;
   return vec2(d, id);
@@ -63,9 +70,9 @@ void main() {
   vec3 color = vec3(0.0);
   vec3 ro, rd;
 
-  float rotation = t*5.;
-  float height   = 1.5;
-  float dist     = 4.0;
+  float rotation = t*1.;
+  float height   = sin(t*2.)*0.5 + 2.2;
+  float dist     = 3.0;
   camera(rotation, height, dist, resolution, ro, rd);
   bool touched = false;
   vec2 tr = raytrace(ro, rd);
@@ -89,9 +96,9 @@ void main() {
     // color = color*0.5 + sample.rgb*0.5;
   // }
   vec4 back = texture2D(texture, uv+(vec2(0.0, 3./resolution.y)));
-  if(!touched){
+  // if(!touched){
     // color = sample.rgb;
-  }
+  // }
   //dither:
   if (length(color) >  noise3d(vec3(uv*290.,t))+1.0){
     color = vec3(1.);
