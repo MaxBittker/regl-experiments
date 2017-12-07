@@ -38,11 +38,11 @@ void main () {
 
   int n =5;
   float f = 0.01;
-  vec2 q = vec2( fbm3d( vec3(uv,t * f) , n ),
-                     fbm3d( vec3(uv + vec2(5.2,1.3),t * f), n ) );
+  // vec2 q = vec2( fbm3d( vec3(uv,t * f) , n ),
+  //                    fbm3d( vec3(uv + vec2(5.2,1.3),t * f), n ) );
 
-  vec2 p2 = vec2( fbm3d( vec3(uv + 4.0*q + vec2(1.7,9.2),t*f),n ),
-                     fbm3d( vec3(uv + 4.0*q + vec2(8.3,2.8),t*f),n ) );
+  // vec2 p2 = vec2( fbm3d( vec3(uv + 4.0*q + vec2(1.7,9.2),t*f),n ),
+  //                    fbm3d( vec3(uv + 4.0*q + vec2(8.3,2.8),t*f),n ) );
 
     // val = fbm3d( vec3(uv + 4.0*p2,t*f),n );
     // float valcloud = fbm3d( vec3(uv + 4.0*p2,t*f),n );
@@ -51,7 +51,7 @@ void main () {
 
   // sOffset = vec2(sin(a),cos(a))*pix;
   // sOffset.y -= pix.y;
-  sOffset = p2 *pix*5.;
+  // sOffset = p2 *pix*5.;
   vec3 scolor = texture2D(texture, uv+sOffset).rgb;
   
   vec3 color = wcolor;
