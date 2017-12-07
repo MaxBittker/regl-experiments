@@ -56,8 +56,9 @@ void main () {
   
   vec3 color = wcolor;
   
-  if(  luma(wcolor)  < luma(scolor) /*webcam brighter*/
-   && luma(wcolor)*1.4 + sin(t*5.)*0.1 > luma(scolor) ){ 
+  if(  luma(wcolor)  > luma(scolor) /*webcam darker*/
+   && luma(wcolor)*0.7 /*+ sin(t*2.)*0.1*/ < luma(scolor)
+    ){ 
     color = scolor;
   }
 
