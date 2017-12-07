@@ -32,12 +32,11 @@ void main () {
   wcolor = hsl2rgb( (sin(t*0.01)*0.5) +1.0 , 0.2, wmag+0.5);
  
 
-  vec2 sOffset = vec2(0.0);
   // vec2(0, 1./resolution.y);
   // sOffset *=0.0;
 
-  int n =5;
-  float f = 0.01;
+  // int n =5;
+  // float f = 0.01;
   float uB = luma(texture2D(texture, uv+pix*vec2(0.,2.0)).rgb);
   float dB = luma(texture2D(texture, uv+pix*vec2(0 ,-2.0)).rgb);
   float lB = luma(texture2D(texture, uv+pix*vec2(-2.0,0.)).rgb);
@@ -47,14 +46,15 @@ void main () {
     rB - lB, dB - uB
     // lB - rB, uB - dB
   );
-
-  vec3 scolor = texture2D(texture, uv + d*pix*20.  ).rgb;
+  vec2 sOffset = vec2(0.0);
+  sOffset =  normalize(uv-vec2(0.5))* pix * -0.5;
+  vec3 scolor = texture2D(texture, uv + sOffset + d*pix  ).rgb;
   // scolor = hsl2rgb( fract(t*0.02) , 0.2, luma(scolor)+0.5);
   
   vec3 color = wcolor;
   
   if(  luma(wcolor)  > luma(scolor) /*webcam darker*/
-   && luma(wcolor)*0.7 /*+ sin(t*2.)*0.1*/ < luma(scolor)
+   && luma(wcolor)*0.5 /*+ sin(t*2.)*0.1*/ < luma(scolor)
     ){ 
     color = scolor;
   }
