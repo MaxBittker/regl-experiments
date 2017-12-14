@@ -8,13 +8,14 @@ module.exports = function (options) {
       return
     }
     const video = document.createElement('video')
-    video.src = window.URL.createObjectURL(stream)
+    video.srcObject = stream;
     document.body.appendChild(video)
     video.addEventListener('loadedmetadata', () => {
-      video.play()
+      video.play().then(() => {
       const webcam = regl.texture(video)
       regl.frame(() => webcam.subimage(video))
       options.done(webcam)
+      })
     })
   })
 }
